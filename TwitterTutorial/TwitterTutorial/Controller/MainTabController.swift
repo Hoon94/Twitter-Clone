@@ -12,6 +12,15 @@ class MainTabController: UITabBarController {
     
     // MARK: - Properties
     
+    var user: User? {
+        didSet {
+            guard let navigationController = viewControllers?[0] as? UINavigationController else { return }
+            guard let feedController = navigationController.viewControllers.first as? FeedController else { return }
+            
+            feedController.user = user
+        }
+    }
+    
     lazy var actionButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .white
@@ -33,6 +42,12 @@ class MainTabController: UITabBarController {
     
     // MARK: - API
     
+    func fetchUser() {
+        UserService.shared.fetchUser { user in
+            self.user = user
+        }
+    }
+    
     func authenticateUserAndConfigureUI() {
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
@@ -43,6 +58,7 @@ class MainTabController: UITabBarController {
         } else {
             configureUI()
             configureViewControllers()
+            fetchUser()
         }
     }
     
