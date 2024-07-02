@@ -5,9 +5,11 @@
 //  Created by Daehoon Lee on 7/1/24.
 //
 
+import Firebase
 import UIKit
 
 class MainTabController: UITabBarController {
+    
     // MARK: - Properties
     
     lazy var actionButton: UIButton = {
@@ -24,8 +26,33 @@ class MainTabController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
-        configureViewControllers()
+//        logUserOut()
+        view.backgroundColor = .twitterBlue
+        authenticateUserAndConfigureUI()
+    }
+    
+    // MARK: - API
+    
+    func authenticateUserAndConfigureUI() {
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let navigationController = UINavigationController(rootViewController: LoginController())
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
+            }
+        } else {
+            configureUI()
+            configureViewControllers()
+        }
+    }
+    
+    func logUserOut() {
+        do {
+            try Auth.auth().signOut()
+            print("DEBUG: Did log user out..")
+        } catch let error {
+            print("DEBUG: Failed to sign out with error \(error.localizedDescription)")
+        }
     }
     
     // MARK: - Selectors

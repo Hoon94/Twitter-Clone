@@ -5,12 +5,15 @@
 //  Created by Daehoon Lee on 7/1/24.
 //
 
+import Firebase
 import UIKit
 
 class RegistrationController: UIViewController {
+    
     // MARK: - Properties
     
     private let imagePicker = UIImagePickerController()
+    private var profileImage: UIImage?
     
     private lazy var plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -35,9 +38,9 @@ class RegistrationController: UIViewController {
         return view
     }()
     
-    private lazy var fullnameContainerView: UIView = {
+    private lazy var fullNameContainerView: UIView = {
         let image = #imageLiteral(resourceName: "ic_person_outline_white_2x")
-        let view = Utilities().inputContainerView(withImage: image, textField: fullnameTextField)
+        let view = Utilities().inputContainerView(withImage: image, textField: fullNameTextField)
         
         return view
     }()
@@ -62,7 +65,7 @@ class RegistrationController: UIViewController {
         return textField
     }()
     
-    private let fullnameTextField: UITextField = {
+    private let fullNameTextField: UITextField = {
         let textField = Utilities().textField(withPlaceholder: "Full Name")
         
         return textField
@@ -108,7 +111,23 @@ class RegistrationController: UIViewController {
     }
     
     @objc func handleRegistration() {
+        guard let profileImage = profileImage else {
+            print("DEBUG: Please select a profile image..")
+            return
+        }
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        guard let fullName = fullNameTextField.text else { return }
+        guard let username = usernameTextField.text else { return }
         
+        let credentials = AuthCredentials(email: email, password: password, fullName: fullName, username: username, profileImage: profileImage)
+        
+        AuthService.shared.registerUser(credentials: credentials) { error, reference in
+            guard let mainTabController = self.view.window?.rootViewController as? MainTabController else { return }
+            
+            mainTabController.authenticateUserAndConfigureUI()
+            self.dismiss(animated: true)
+        }
     }
     
     @objc func handleShowLogin() {
@@ -127,7 +146,7 @@ class RegistrationController: UIViewController {
         plusPhotoButton.centerX(inView: view, topAnchor: view.safeAreaLayoutGuide.topAnchor)
         plusPhotoButton.setDimensions(width: 128, height: 128)
         
-        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullnameContainerView, usernameContainerView, registrationButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullNameContainerView, usernameContainerView, registrationButton])
         stack.axis = .vertical
         stack.spacing = 20
         stack.distribution = .fillEqually
@@ -146,6 +165,7 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let profileImage = info[.editedImage] as? UIImage else { return }
         
+        self.profileImage = profileImage
         plusPhotoButton.layer.cornerRadius = 128 / 2
         plusPhotoButton.layer.masksToBounds = true
         plusPhotoButton.imageView?.contentMode = .scaleAspectFill

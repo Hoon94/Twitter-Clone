@@ -8,6 +8,7 @@
 import UIKit
 
 class LoginController: UIViewController {
+    
     // MARK: - Properties
     
     private let logoImageView: UIImageView = {
@@ -76,7 +77,20 @@ class LoginController: UIViewController {
     // MARK: - Selectors
     
     @objc func handleLogin() {
-        print("Handle login here..")
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        AuthService.shared.logUserIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("DEBUG: Error logging in \(error.localizedDescription)")
+                return
+            }
+            
+            guard let mainTabController = self.view.window?.rootViewController as? MainTabController else { return }
+            
+            mainTabController.authenticateUserAndConfigureUI()
+            self.dismiss(animated: true)
+        }
     }
     
     @objc func handleShowSignUp() {
