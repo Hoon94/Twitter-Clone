@@ -30,6 +30,9 @@
 		785FA0302C34464600C33A6D /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785FA02F2C34464600C33A6D /* UserService.swift */; };
 		785FA0322C344AF900C33A6D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785FA0312C344AF900C33A6D /* User.swift */; };
 		785FA0352C344FFE00C33A6D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 785FA0342C344FFE00C33A6D /* Kingfisher */; };
+		785FA0412C35218000C33A6D /* UploadTweetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785FA0402C35218000C33A6D /* UploadTweetController.swift */; };
+		785FA0432C35298100C33A6D /* CaptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785FA0422C35298100C33A6D /* CaptionTextView.swift */; };
+		785FA0452C352EEC00C33A6D /* TweetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785FA0442C352EEB00C33A6D /* TweetService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +56,9 @@
 		785FA02D2C33F6B300C33A6D /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		785FA02F2C34464600C33A6D /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		785FA0312C344AF900C33A6D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		785FA0402C35218000C33A6D /* UploadTweetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadTweetController.swift; sourceTree = "<group>"; };
+		785FA0422C35298100C33A6D /* CaptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionTextView.swift; sourceTree = "<group>"; };
+		785FA0442C352EEB00C33A6D /* TweetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +127,7 @@
 			children = (
 				785FA02D2C33F6B300C33A6D /* AuthService.swift */,
 				785FA02F2C34464600C33A6D /* UserService.swift */,
+				785FA0442C352EEB00C33A6D /* TweetService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -134,6 +141,7 @@
 				785FA00D2C32AC0300C33A6D /* ExploreController.swift */,
 				785FA00F2C32AC1C00C33A6D /* NotificationsController.swift */,
 				785FA0112C32AC3E00C33A6D /* ConversationsController.swift */,
+				785FA0402C35218000C33A6D /* UploadTweetController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -148,6 +156,7 @@
 		785FA0072C32A88D00C33A6D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				785FA0422C35298100C33A6D /* CaptionTextView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -253,12 +262,14 @@
 			files = (
 				785FA0302C34464600C33A6D /* UserService.swift in Sources */,
 				785FA0102C32AC1C00C33A6D /* NotificationsController.swift in Sources */,
+				785FA0432C35298100C33A6D /* CaptionTextView.swift in Sources */,
 				785FA0122C32AC3E00C33A6D /* ConversationsController.swift in Sources */,
 				785FA01B2C32D4C700C33A6D /* Utilities.swift in Sources */,
 				785F9FF02C32A4C100C33A6D /* AppDelegate.swift in Sources */,
 				785FA0142C32B66A00C33A6D /* Extensions.swift in Sources */,
 				785FA0172C32CB9200C33A6D /* LoginController.swift in Sources */,
 				785FA02E2C33F6B300C33A6D /* AuthService.swift in Sources */,
+				785FA0412C35218000C33A6D /* UploadTweetController.swift in Sources */,
 				785FA0322C344AF900C33A6D /* User.swift in Sources */,
 				785FA00E2C32AC0400C33A6D /* ExploreController.swift in Sources */,
 				785F9FF22C32A4C100C33A6D /* SceneDelegate.swift in Sources */,
@@ -266,6 +277,7 @@
 				785FA0192C32CCB600C33A6D /* RegistrationController.swift in Sources */,
 				785FA00C2C32ABAC00C33A6D /* FeedController.swift in Sources */,
 				785FA02C2C33E5B900C33A6D /* Constants.swift in Sources */,
+				785FA0452C352EEC00C33A6D /* TweetService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

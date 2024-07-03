@@ -9,6 +9,7 @@ import Kingfisher
 import UIKit
 
 class FeedController: UIViewController {
+    
     // MARK: - Properties
     
     var user: User? {
@@ -28,6 +29,7 @@ class FeedController: UIViewController {
         view.backgroundColor = .systemBackground
         let imageView = UIImageView(image: UIImage(resource: .twitterLogoBlue))
         imageView.contentMode = .scaleAspectFit
+        imageView.setDimensions(width: 44, height: 44)
         navigationItem.titleView = imageView
     }
     
