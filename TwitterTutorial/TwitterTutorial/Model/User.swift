@@ -5,6 +5,7 @@
 //  Created by Daehoon Lee on 7/2/24.
 //
 
+import Firebase
 import Foundation
 
 struct User {
@@ -16,6 +17,10 @@ struct User {
     let username: String
     var profileImageUrl: URL?
     let userId: String
+    
+    var isCurrentUser: Bool {
+        return Auth.auth().currentUser?.uid == userId
+    }
     
     // MARK: - Lifecycle
     
