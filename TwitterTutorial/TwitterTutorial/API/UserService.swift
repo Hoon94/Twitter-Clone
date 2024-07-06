@@ -7,9 +7,11 @@
 
 import Firebase
 
-typealias DatabaseCompletion = (Error?, DatabaseReference) -> Void
-
 struct UserService {
+    
+    // MARK: - Typealias
+    
+    typealias DatabaseCompletion = (Error?, DatabaseReference) -> Void
     
     // MARK: - Static
     
