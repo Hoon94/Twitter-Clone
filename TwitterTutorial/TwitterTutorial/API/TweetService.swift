@@ -93,4 +93,31 @@ struct TweetService {
             }
         }
     }
+    
+    func likeTweet(tweet: Tweet, completion: @escaping DatabaseCompletion) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+        REF_TWEETS.child(tweet.tweetId).child("likes").setValue(likes)
+        
+        if tweet.didLike {
+            // unlike tweet: remove like data from firebase
+            REF_USER_LIKES.child(userId).child(tweet.tweetId).removeValue { error, reference in
+                REF_TWEET_LIKES.child(tweet.tweetId).removeValue(completionBlock: completion)
+            }
+        } else {
+            // like tweet: add like data to firebase
+            REF_USER_LIKES.child(userId).updateChildValues([tweet.tweetId: 1]) { error, reference in
+                REF_TWEET_LIKES.child(tweet.tweetId).updateChildValues([userId: 1], withCompletionBlock: completion)
+            }
+        }
+    }
+    
+    func checkIfUserLikedTweet(_ tweet: Tweet, completion: @escaping (Bool) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        REF_USER_LIKES.child(userId).child(tweet.tweetId).observeSingleEvent(of: .value) { snapshot in
+            completion(snapshot.exists())
+        }
+    }
 }

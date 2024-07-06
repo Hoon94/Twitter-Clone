@@ -59,6 +59,14 @@ struct TweetViewModel {
         return title
     }
     
+    var likeButtonTintColor: UIColor {
+        return tweet.didLike ? .red : .lightGray
+    }
+    
+    var likeButtonImage: UIImage {
+        return tweet.didLike ? UIImage(resource: .likeFilled) : UIImage(resource: .like)
+    }
+    
     // MARK: - Lifecycle
     
     init(tweet: Tweet) {
