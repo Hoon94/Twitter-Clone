@@ -16,8 +16,23 @@ class ProfileController: UICollectionViewController {
     
     private var user: User
     
-    private var tweets = [Tweet]() {
+    private var selectedFilter: ProfileFilterOptions = .tweets {
         didSet { collectionView.reloadData() }
+    }
+    
+    private var tweets = [Tweet]()
+    private var replies = [Tweet]()
+    private var likes = [Tweet]()
+    
+    private var currentDataSource: [Tweet] {
+        switch selectedFilter {
+        case .tweets:
+            return tweets
+        case .replies:
+            return replies
+        case .likes:
+            return likes
+        }
     }
     
     // MARK: - Lifecycle
@@ -35,6 +50,8 @@ class ProfileController: UICollectionViewController {
         super.viewDidLoad()
         configureCollectionView()
         fetchTweets()
+        fetchRepliedTweets()
+        fetchLikedTweets()
         checkIfUserIsFollowed()
         fetchUserStats()
     }
@@ -49,6 +66,19 @@ class ProfileController: UICollectionViewController {
     func fetchTweets() {
         TweetService.shared.fetchTweets(forUser: user) { tweets in
             self.tweets = tweets
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func fetchRepliedTweets() {
+        TweetService.shared.fetchReplies(forUser: user) { tweets in
+            self.replies = tweets
+        }
+    }
+    
+    func fetchLikedTweets() {
+        TweetService.shared.fetchLikes(forUser: user) { tweets in
+            self.likes = tweets
         }
     }
     
@@ -75,6 +105,10 @@ class ProfileController: UICollectionViewController {
         collectionView.register(ProfileHeader.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: headerIdentifier)
+        
+        guard let tabHeight = tabBarController?.tabBar.frame.height else { return }
+        
+        collectionView.contentInset.bottom = tabHeight
     }
 }
 
@@ -82,13 +116,13 @@ class ProfileController: UICollectionViewController {
 
 extension ProfileController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tweets.count
+        return currentDataSource.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? TweetCell else { return UICollectionViewCell() }
         
-        cell.tweet = tweets[indexPath.item]
+        cell.tweet = currentDataSource[indexPath.item]
         
         return cell
     }
@@ -105,6 +139,11 @@ extension ProfileController {
         
         return header
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let controller = TweetController(tweet: currentDataSource[indexPath.item])
+        navigationController?.pushViewController(controller, animated: true)
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
@@ -115,7 +154,15 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 120)
+        let tweet = currentDataSource[indexPath.item]
+        let viewModel = TweetViewModel(tweet: tweet)
+        var captionHeight = viewModel.size(forWidth: view.frame.width).height
+        
+        if tweet.isReply {
+            captionHeight += 20
+        }
+        
+        return CGSize(width: view.frame.width, height: captionHeight + 72)
     }
 }
 
@@ -146,5 +193,9 @@ extension ProfileController: ProfileHeaderDelegate {
                 print("DEBUG: Follow the user..")
             }
         }
+    }
+    
+    func didSelect(filter: ProfileFilterOptions) {
+        selectedFilter = filter
     }
 }

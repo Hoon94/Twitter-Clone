@@ -19,6 +19,11 @@ struct Tweet {
     let retweetCount: Int
     let user: User
     var didLike = false
+    var replyingTo: String?
+    
+    var isReply: Bool {
+        replyingTo != nil
+    }
     
     // MARK: - Lifecycle
     
@@ -33,6 +38,10 @@ struct Tweet {
         
         if let timestamp = dictionary["timestamp"] as? Double {
             self.timestamp = Date(timeIntervalSince1970: timestamp)
+        }
+        
+        if let replyingTo = dictionary["replyingTo"] as? String {
+            self.replyingTo = replyingTo
         }
     }
 }
