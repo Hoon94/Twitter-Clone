@@ -5,6 +5,7 @@
 //  Created by Daehoon Lee on 7/3/24.
 //
 
+import ActiveLabel
 import Kingfisher
 import UIKit
 
@@ -43,11 +44,11 @@ class UploadTweetController: UIViewController {
         return imageView
     }()
     
-    private let replyLabel: UILabel = {
-        let label = UILabel()
+    private let replyLabel: ActiveLabel = {
+        let label = ActiveLabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = .lightGray
-        label.text = "replying to @spiderman"
+        label.mentionColor = .twitterBlue
         
         return label
     }()
@@ -69,6 +70,7 @@ class UploadTweetController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        configureMentionHandler()
     }
     
     // MARK: - Selectors
@@ -124,5 +126,11 @@ class UploadTweetController: UIViewController {
     func configureNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: actionButton)
+    }
+    
+    func configureMentionHandler() {
+        replyLabel.handleMentionTap { username in
+            print("DEBUG: Mentioned user is \(username)")
+        }
     }
 }

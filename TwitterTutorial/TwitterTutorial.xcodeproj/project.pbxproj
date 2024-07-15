@@ -56,6 +56,7 @@
 		78602C4A2C44B142004B9BD4 /* EditProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78602C492C44B142004B9BD4 /* EditProfileHeader.swift */; };
 		78602C4C2C44B58C004B9BD4 /* EditProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78602C4B2C44B58C004B9BD4 /* EditProfileViewModel.swift */; };
 		78602C4E2C44B62E004B9BD4 /* EditProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78602C4D2C44B62E004B9BD4 /* EditProfileCell.swift */; };
+		78602C512C451D90004B9BD4 /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 78602C502C451D90004B9BD4 /* ActiveLabel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,6 +114,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				785FA0242C330D2F00C33A6D /* FirebaseDatabase in Frameworks */,
+				78602C512C451D90004B9BD4 /* ActiveLabel in Frameworks */,
 				785FA0262C330D2F00C33A6D /* FirebaseStorage in Frameworks */,
 				785FA0202C330D2F00C33A6D /* FirebaseAnalytics in Frameworks */,
 				785FA0222C330D2F00C33A6D /* FirebaseAuth in Frameworks */,
@@ -269,6 +271,7 @@
 				785FA0232C330D2F00C33A6D /* FirebaseDatabase */,
 				785FA0252C330D2F00C33A6D /* FirebaseStorage */,
 				785FA0342C344FFE00C33A6D /* Kingfisher */,
+				78602C502C451D90004B9BD4 /* ActiveLabel */,
 			);
 			productName = TwitterTutorial;
 			productReference = 785F9FEC2C32A4C100C33A6D /* TwitterTutorial.app */;
@@ -301,6 +304,7 @@
 			packageReferences = (
 				785FA01E2C330D2F00C33A6D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				785FA0332C344FFE00C33A6D /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				78602C4F2C451D90004B9BD4 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
 			);
 			productRefGroup = 785F9FED2C32A4C100C33A6D /* Products */;
 			projectDirPath = "";
@@ -600,6 +604,14 @@
 				minimumVersion = 7.12.0;
 			};
 		};
+		78602C4F2C451D90004B9BD4 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/optonaut/ActiveLabel.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -627,6 +639,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 785FA0332C344FFE00C33A6D /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		78602C502C451D90004B9BD4 /* ActiveLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78602C4F2C451D90004B9BD4 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */;
+			productName = ActiveLabel;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

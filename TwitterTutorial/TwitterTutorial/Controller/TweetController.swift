@@ -124,6 +124,13 @@ extension TweetController: TweetHeaderDelegate {
             }
         }
     }
+    
+    func handleFetchUser(withUsername username: String) {
+        UserService.shared.fetchUser(withUsername: username) { user in
+            let controller = ProfileController(user: user)
+            self.navigationController?.pushViewController(controller, animated: true)
+        }
+    }
 }
 
 // MARK: - ActionSheetLauncherDelegate

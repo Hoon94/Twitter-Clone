@@ -54,6 +54,7 @@ struct AuthService {
                     guard let userId = result?.user.uid else { return }
                     
                     let values = ["email": email, "username": username, "fullName": fullName, "profileImageUrl": profileImageUrl]
+                    REF_USER_USERNAMES.updateChildValues([username: userId])
                     REF_USERS.child(userId).updateChildValues(values, withCompletionBlock: completion)
                 }
             }
