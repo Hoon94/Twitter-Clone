@@ -12,13 +12,14 @@ struct User {
     
     // MARK: - Properties
     
-    let fullName: String
+    var fullName: String
     let email: String
-    let username: String
+    var username: String
     var profileImageUrl: URL?
     let userId: String
     var isFollowed = false
     var stats: UserRelationStats?
+    var bio: String
     
     var isCurrentUser: Bool {
         return Auth.auth().currentUser?.uid == userId
@@ -31,6 +32,7 @@ struct User {
         self.fullName = dictionary["fullName"] as? String ?? ""
         self.email = dictionary["email"] as? String ?? ""
         self.username = dictionary["username"] as? String ?? ""
+        self.bio = dictionary["bio"] as? String ?? ""
         
         if let profileImageUrl = dictionary["profileImageUrl"] as? String {
             guard let url = URL(string: profileImageUrl) else { return }
