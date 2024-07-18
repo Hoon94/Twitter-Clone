@@ -243,7 +243,8 @@ class TweetHeader: UICollectionReusableView {
     
     func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(named: imageName), for: .normal)
+        let imageResource = ImageResource(name: imageName, bundle: .main)
+        button.setImage(UIImage(resource: imageResource), for: .normal)
         button.tintColor = .darkGray
         button.setDimensions(width: 20, height: 20)
         

@@ -15,23 +15,34 @@ struct NotificationService {
     
     // MARK: - Helpers
     
-    func uploadNotification(type: NotificationType, tweet: Tweet? = nil, user: User? = nil) {
+    func uploadNotification(toUser user: User, type: NotificationType, tweetId: String? = nil) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         var values: [String: Any] = ["timestamp": Int(Date().timeIntervalSince1970), "uid": userId, "type": type.rawValue]
         
-        if let tweet = tweet {
-            values["tweetId"] = tweet.tweetId
-            
-            REF_NOTIFICATIONS.child(tweet.userId).childByAutoId().updateChildValues(values)
-        } else if let user = user {
-            REF_NOTIFICATIONS.child(user.userId).childByAutoId().updateChildValues(values)
+        if let tweetId = tweetId {
+            values["tweetId"] = tweetId
         }
+        
+        REF_NOTIFICATIONS.child(user.userId).childByAutoId().updateChildValues(values)
     }
     
     func fetchNotifications(completion: @escaping ([Notification]) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
+        let notifications = [Notification]()
+        
+        REF_NOTIFICATIONS.child(userId).observeSingleEvent(of: .value) { snapshot in
+            guard snapshot.exists() else {
+                completion(notifications)
+                return
+            }
+            
+            self.fetchNotifications(userId: userId, completion: completion)
+        }
+    }
+    
+    func fetchNotifications(userId: String, completion: @escaping ([Notification]) -> Void) {
         var notifications = [Notification]()
         
         REF_NOTIFICATIONS.child(userId).observe(.childAdded) { snapshot in

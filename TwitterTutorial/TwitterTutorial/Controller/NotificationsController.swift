@@ -43,11 +43,16 @@ class NotificationsController: UITableViewController {
     }
     
     func checkIfUserIsFollowed(notifications: [Notification]) {
-        for (index, notification) in notifications.enumerated() {
-            if case .follow = notification.type {
-                let user = notification.user
-                
-                UserService.shared.checkIfUserIsFollowed(userId: user.userId) { isFollowed in
+        guard !notifications.isEmpty else { return }
+        
+        notifications.forEach { notification in
+            guard case .follow = notification.type else { return }
+            
+            let user = notification.user
+            
+            // FIXME: - 첫 index만을 수정하므로 follow를 여러번 한 경우 이전에 follow한 내용에 대해서는 버튼이 following으로 변하지 않는다.
+            UserService.shared.checkIfUserIsFollowed(userId: user.userId) { isFollowed in
+                if let index = self.notifications.firstIndex(where: { $0.user.userId == notification.user.userId }) {
                     self.notifications[index].user.isFollowed = isFollowed
                 }
             }

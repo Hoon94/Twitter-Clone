@@ -5,6 +5,7 @@
 //  Created by Daehoon Lee on 7/3/24.
 //
 
+import Firebase
 import UIKit
 
 private let reuseIdentifier = "TweetCell"
@@ -150,7 +151,14 @@ extension ProfileController {
 
 extension ProfileController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: view.frame.width, height: 350)
+        
+        var height: CGFloat = 300
+        
+        if !user.bio.isEmpty {
+            height += 40
+        }
+        
+        return CGSize(width: view.frame.width, height: height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -194,7 +202,7 @@ extension ProfileController: ProfileHeaderDelegate {
             UserService.shared.followUser(userId: user.userId) { error, reference in
                 self.user.isFollowed = true
                 self.collectionView.reloadData()
-                NotificationService.shared.uploadNotification(type: .follow, user: self.user)
+                NotificationService.shared.uploadNotification(toUser: self.user, type: .follow)
                 print("DEBUG: Follow the user..")
             }
         }
@@ -212,5 +220,17 @@ extension ProfileController: EditProfileControllerDelegate {
         self.user = user
         collectionView.reloadData()
         controller.dismiss(animated: true)
+    }
+    
+    func handleLogout() {
+        do {
+            try Auth.auth().signOut()
+            let navigationController = UINavigationController(rootViewController: LoginController())
+            navigationController.modalPresentationStyle = .fullScreen
+            present(navigationController, animated: true)
+            print("DEBUG: Did log user out..")
+        } catch let error {
+            print("DEBUG: Failed to sign out with error \(error.localizedDescription)")
+        }
     }
 }

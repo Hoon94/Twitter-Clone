@@ -1,5 +1,5 @@
 //
-//  ExploreController.swift
+//  SearchController.swift
 //  TwitterTutorial
 //
 //  Created by Daehoon Lee on 7/1/24.
@@ -9,9 +9,16 @@ import UIKit
 
 private let reuseIdentifier = "UserCell"
 
-class ExploreController: UITableViewController {
+enum SearchControllerConfiguration {
+    case userSearch
+    case messages
+}
+
+class SearchController: UITableViewController {
     
     // MARK: - Properties
+    
+    private let config: SearchControllerConfiguration
     
     private var users = [User]() {
         didSet { tableView.reloadData() }
@@ -30,6 +37,15 @@ class ExploreController: UITableViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: - Lifecycle
+    
+    init(config: SearchControllerConfiguration) {
+        self.config = config
+        super.init(style: .plain)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,15 +67,25 @@ class ExploreController: UITableViewController {
         }
     }
     
+    // MARK: - Selectors
+    
+    @objc func handleDismissal() {
+        dismiss(animated: true)
+    }
+    
     // MARK: - Helpers
     
     func configureUI() {
         view.backgroundColor = .systemBackground
-        navigationItem.title = "Explore"
+        navigationItem.title = config == .userSearch ? "Explore" : "New Message"
         
         tableView.register(UserCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
         tableView.separatorStyle = .none
+        
+        if config == .messages {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleDismissal))
+        }
     }
     
     func configureSearchController() {
@@ -74,7 +100,7 @@ class ExploreController: UITableViewController {
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
-extension ExploreController {
+extension SearchController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return inSearchMode ? filteredUsers.count : users.count
     }
@@ -97,7 +123,7 @@ extension ExploreController {
 
 // MARK: - UISearchResultsUpdating
 
-extension ExploreController: UISearchResultsUpdating {
+extension SearchController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text?.lowercased() else { return }
         
