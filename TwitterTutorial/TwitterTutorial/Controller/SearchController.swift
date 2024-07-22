@@ -34,7 +34,7 @@ class SearchController: UITableViewController {
         return searchController.isActive && !searchText.isEmpty
     }
     
-    private let searchController = UISearchController(searchResultsController: nil)
+    private let searchController = UISearchController()
     
     // MARK: - Lifecycle
     
@@ -49,8 +49,9 @@ class SearchController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
         fetchUsers()
+        configureUI()
+        configureTableView()
         configureSearchController()
     }
     
@@ -61,7 +62,7 @@ class SearchController: UITableViewController {
     
     // MARK: - API
     
-    func fetchUsers() {
+    private func fetchUsers() {
         UserService.shared.fetchUsers { users in
             self.users = users
         }
@@ -69,30 +70,33 @@ class SearchController: UITableViewController {
     
     // MARK: - Selectors
     
-    @objc func handleDismissal() {
+    @objc private func handleDismissal() {
         dismiss(animated: true)
     }
     
     // MARK: - Helpers
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
         navigationItem.title = config == .userSearch ? "Explore" : "New Message"
-        
-        tableView.register(UserCell.self, forCellReuseIdentifier: reuseIdentifier)
-        tableView.rowHeight = 60
-        tableView.separatorStyle = .none
         
         if config == .messages {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleDismissal))
         }
     }
     
-    func configureSearchController() {
+    private func configureTableView() {
+        tableView.register(UserCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.rowHeight = 60
+        tableView.separatorStyle = .none
+    }
+    
+    private func configureSearchController() {
         searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search for a user"
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.placeholder = "Search for a user"
+        
         navigationItem.searchController = searchController
         definesPresentationContext = false
     }

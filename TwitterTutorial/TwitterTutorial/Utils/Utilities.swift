@@ -5,26 +5,45 @@
 //  Created by Daehoon Lee on 7/1/24.
 //
 
+import SnapKit
 import UIKit
 
 class Utilities {
+    
+    // MARK: - Helpers
+    
     func inputContainerView(withImage image: UIImage, textField: UITextField) -> UIView {
         let view = UIView()
         let imageView = UIImageView()
-        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        let dividerView = UIView()
         
         imageView.image = image
-        view.addSubview(imageView)
-        imageView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, paddingBottom: 8)
-        imageView.setDimensions(width: 24, height: 24)
-        
-        view.addSubview(textField)
-        textField.anchor(left: imageView.rightAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingLeft: 8, paddingBottom: 8)
-        
-        let dividerView = UIView()
         dividerView.backgroundColor = .white
+        
+        view.addSubview(imageView)
+        view.addSubview(textField)
         view.addSubview(dividerView)
-        dividerView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 0.75)
+        
+        view.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        
+        imageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.bottom.equalToSuperview().inset(8)
+            make.width.height.equalTo(24)
+        }
+        
+        textField.snp.makeConstraints { make in
+            make.leading.equalTo(imageView.snp.trailing).offset(8)
+            make.bottom.equalToSuperview().inset(8)
+            make.trailing.equalToSuperview()
+        }
+        
+        dividerView.snp.makeConstraints { make in
+            make.leading.bottom.trailing.equalToSuperview()
+            make.height.equalTo(0.75)
+        }
         
         return view
     }
@@ -42,10 +61,8 @@ class Utilities {
         let button = UIButton(type: .system)
         let attributedTitle = NSMutableAttributedString(string: firstPart, attributes: [.font: UIFont.systemFont(ofSize: 16),
                                                                                         .foregroundColor: UIColor.white])
-        
         attributedTitle.append(NSMutableAttributedString(string: secondPart, attributes: [.font: UIFont.boldSystemFont(ofSize: 16),
                                                                                          .foregroundColor: UIColor.white]))
-        
         button.setAttributedTitle(attributedTitle, for: .normal)
         
         return button

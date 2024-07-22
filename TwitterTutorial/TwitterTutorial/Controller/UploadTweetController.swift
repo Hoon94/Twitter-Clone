@@ -7,6 +7,8 @@
 
 import ActiveLabel
 import Kingfisher
+import SnapKit
+import Then
 import UIKit
 
 class UploadTweetController: UIViewController {
@@ -17,43 +19,45 @@ class UploadTweetController: UIViewController {
     private let config: UploadTweetConfiguration
     private lazy var viewModel = UploadTweetViewModel(config: config)
     
-    private lazy var actionButton: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var actionButton = UIButton(type: .system).then { button in
         button.backgroundColor = .twitterBlue
         button.setTitle("Tweet", for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.setTitleColor(.white, for: .normal)
-        
         button.frame = CGRect(x: 0, y: 0, width: 64, height: 32)
         button.layer.cornerRadius = 32 / 2
-        
         button.addTarget(self, action: #selector(handleUploadTweet), for: .touchUpInside)
-        
-        return button
-    }()
+    }
     
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
+    private let profileImageView = UIImageView().then { imageView in
+        imageView.backgroundColor = .twitterBlue
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.setDimensions(width: 48, height: 48)
         imageView.layer.cornerRadius = 48 / 2
-        imageView.backgroundColor = .twitterBlue
-        
-        return imageView
-    }()
+        imageView.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
+    }
     
-    private let replyLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = .lightGray
-        label.mentionColor = .twitterBlue
-        
-        return label
-    }()
+    private let replyLabel = ActiveLabel().then {
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = .lightGray
+        $0.mentionColor = .twitterBlue
+    }
     
     private let captionTextView = InputTextView()
+    
+    private lazy var imageCaptionStackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView]).then {
+        $0.spacing = 12
+        $0.axis = .horizontal
+        $0.alignment = .leading
+    }
+    
+    private lazy var stackView = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStackView]).then {
+        $0.axis = .vertical
+        $0.spacing = 12
+    }
     
     // MARK: - Lifecycle
     
@@ -75,11 +79,11 @@ class UploadTweetController: UIViewController {
     
     // MARK: - Selectors
     
-    @objc func handleCancel() {
+    @objc private func handleCancel() {
         dismiss(animated: true)
     }
     
-    @objc func handleUploadTweet() {
+    @objc private func handleUploadTweet() {
         guard let caption = captionTextView.text else { return }
         
         TweetService.shared.uploadTweet(caption: caption, type: config) { error, reference in
@@ -101,7 +105,7 @@ class UploadTweetController: UIViewController {
     
     // MARK: - API
     
-    fileprivate func uploadMentionNotification(forCaption caption: String, tweetId: String?) {
+    private func uploadMentionNotification(forCaption caption: String, tweetId: String?) {
         guard caption.contains("@") else { return }
         
         let words = caption.components(separatedBy: .whitespacesAndNewlines)
@@ -120,22 +124,16 @@ class UploadTweetController: UIViewController {
     
     // MARK: - Helpers
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
-        configureNavigationBar()
-        
-        let imageCaptionStackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
-        imageCaptionStackView.axis = .horizontal
-        imageCaptionStackView.spacing = 12
-        imageCaptionStackView.alignment = .leading
-        
-        let stackView = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStackView])
-        stackView.axis = .vertical
-        stackView.spacing = 12
 
         view.addSubview(stackView)
-        stackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 16, paddingLeft: 16, paddingRight: 16)
+        stackView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.directionalHorizontalEdges.equalToSuperview().inset(16)
+        }
         
+        configureNavigationBar()
         profileImageView.kf.setImage(with: user.profileImageUrl)
         actionButton.setTitle(viewModel.actionButtonTitle, for: .normal)
         captionTextView.placeholderLabel.text = viewModel.placeholderText
@@ -143,12 +141,12 @@ class UploadTweetController: UIViewController {
         replyLabel.text = viewModel.replyText
     }
     
-    func configureNavigationBar() {
+    private func configureNavigationBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: actionButton)
     }
     
-    func configureMentionHandler() {
+    private func configureMentionHandler() {
         replyLabel.handleMentionTap { username in
             print("DEBUG: Mentioned user is \(username)")
         }

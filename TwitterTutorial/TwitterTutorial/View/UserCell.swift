@@ -6,6 +6,8 @@
 //
 
 import Kingfisher
+import SnapKit
+import Then
 import UIKit
 
 class UserCell: UITableViewCell {
@@ -16,47 +18,37 @@ class UserCell: UITableViewCell {
         didSet { configure() }
     }
     
-    private lazy var profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
-        imageView.setDimensions(width: 40, height: 40)
-        imageView.layer.cornerRadius = 40 / 2
+    private lazy var profileImageView = UIImageView().then { imageView in
+        imageView.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+        }
+        
         imageView.backgroundColor = .twitterBlue
-        
-        return imageView
-    }()
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 40 / 2
+        imageView.clipsToBounds = true
+    }
     
-    private let usernameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.text = "Username"
-        
-        return label
-    }()
+    private let usernameLabel = UILabel().then {
+        $0.font = UIFont.boldSystemFont(ofSize: 14)
+        $0.text = "Username"
+    }
     
-    private let fullNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Full name"
-        
-        return label
-    }()
+    private let fullNameLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.text = "Full name"
+    }
+    
+    private lazy var labelStackView = UIStackView(arrangedSubviews: [usernameLabel, fullNameLabel]).then {
+        $0.axis = .vertical
+        $0.spacing = 2
+    }
     
     // MARK: - Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        addSubview(profileImageView)
-        profileImageView.centerY(inView: self, leftAnchor: leftAnchor, paddingLeft: 12)
-        
-        let stackView = UIStackView(arrangedSubviews: [usernameLabel, fullNameLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 2
-        
-        addSubview(stackView)
-        stackView.centerY(inView: profileImageView, leftAnchor: profileImageView.rightAnchor, paddingLeft: 12)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -65,12 +57,25 @@ class UserCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    func configure() {
+    private func configure() {
         guard let user = user else { return }
-        
-        profileImageView.kf.setImage(with: user.profileImageUrl)
         
         usernameLabel.text = user.username
         fullNameLabel.text = user.fullName
+        profileImageView.kf.setImage(with: user.profileImageUrl)
+    }
+    
+    private func configureUI() {
+        contentView.addSubview(profileImageView)
+        profileImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(12)
+        }
+        
+        addSubview(labelStackView)
+        labelStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(profileImageView.snp.trailing).offset(12)
+        }
     }
 }

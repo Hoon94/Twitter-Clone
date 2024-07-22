@@ -47,7 +47,6 @@ class EditProfileController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureTableView()
         configureImagePicker()
         configureNavigationBar()
@@ -55,7 +54,7 @@ class EditProfileController: UITableViewController {
     
     // MARK: - API
     
-    func updateUserData() {
+    private func updateUserData() {
         if imageChanged && !userInformationChanged {
             print("DEBUG: Changed image and not data")
             updateProfileImage()
@@ -76,7 +75,7 @@ class EditProfileController: UITableViewController {
         }
     }
     
-    func updateProfileImage() {
+    private func updateProfileImage() {
         guard let image = selectedImage else { return }
         
         UserService.shared.updateProfileImage(image: image) { profileImageUrl in
@@ -87,11 +86,11 @@ class EditProfileController: UITableViewController {
     
     // MARK: - Selectors
     
-    @objc func handleCancel() {
+    @objc private func handleCancel() {
         dismiss(animated: true)
     }
     
-    @objc func handleDone() {
+    @objc private func handleDone() {
         view.endEditing(true)
         
         guard imageChanged || userInformationChanged else { return }
@@ -101,7 +100,7 @@ class EditProfileController: UITableViewController {
     
     // MARK: - Helpers
     
-    func configureTableView() {
+    private func configureTableView() {
         headerView.delegate = self
         headerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 180)
         tableView.tableHeaderView = headerView
@@ -114,12 +113,12 @@ class EditProfileController: UITableViewController {
         tableView.register(EditProfileCell.self, forCellReuseIdentifier: reuseIdentifier)
     }
     
-    func configureImagePicker() {
+    private func configureImagePicker() {
         imagePickerController.delegate = self
         imagePickerController.allowsEditing = true
     }
     
-    func configureNavigationBar() {
+    private func configureNavigationBar() {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()

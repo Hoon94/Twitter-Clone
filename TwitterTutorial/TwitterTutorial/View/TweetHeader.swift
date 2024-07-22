@@ -7,6 +7,8 @@
 
 import ActiveLabel
 import Kingfisher
+import SnapKit
+import Then
 import UIKit
 
 protocol TweetHeaderDelegate: AnyObject {
@@ -24,171 +26,132 @@ class TweetHeader: UICollectionReusableView {
     
     weak var delegate: TweetHeaderDelegate?
     
-    private let replyLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.mentionColor = .twitterBlue
-        
-        return label
-    }()
+    private let replyLabel = ActiveLabel().then {
+        $0.textColor = .lightGray
+        $0.mentionColor = .twitterBlue
+        $0.font = UIFont.systemFont(ofSize: 12)
+    }
     
-    private lazy var profileImageView: UIImageView = {
-        let imageView = UIImageView()
+    private lazy var profileImageView = UIImageView().then { imageView in
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.setDimensions(width: 48, height: 48)
-        imageView.layer.cornerRadius = 48 / 2
         imageView.backgroundColor = .twitterBlue
+        imageView.layer.cornerRadius = 48 / 2
+        imageView.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTapped))
         imageView.addGestureRecognizer(tapGesture)
         imageView.isUserInteractionEnabled = true
-        
-        return imageView
-    }()
+    }
     
-    private let fullNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.text = "Peter Parker"
-        
-        return label
-    }()
+    private let fullNameLabel = UILabel().then {
+        $0.font = UIFont.boldSystemFont(ofSize: 14)
+    }
     
-    private let usernameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = .lightGray
-        label.text = "spiderman"
-        
-        return label
-    }()
+    private let usernameLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = .lightGray
+    }
     
-    private let captionLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.font = UIFont.systemFont(ofSize: 20)
-        label.numberOfLines = 0
-        label.mentionColor = .twitterBlue
-        label.hashtagColor = .twitterBlue
-        
-        return label
-    }()
+    private lazy var labelStackView = UIStackView(arrangedSubviews: [fullNameLabel, usernameLabel]).then {
+        $0.spacing = -6
+        $0.axis = .vertical
+    }
     
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .left
-        label.text = "6:33 PM - 1/28/2020"
-        
-        return label
-    }()
+    private lazy var profileStackView = UIStackView(arrangedSubviews: [profileImageView, labelStackView]).then {
+        $0.spacing = 12
+    }
     
-    private lazy var optionsButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.tintColor = .lightGray
-        button.setImage(UIImage(resource: .downArrow24Pt), for: .normal)
-        button.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)
-        
-        return button
-    }()
+    private lazy var stackView = UIStackView(arrangedSubviews: [replyLabel, profileStackView]).then {
+        $0.spacing = 8
+        $0.axis = .vertical
+        $0.distribution = .fillProportionally
+    }
+    
+    private let captionLabel = ActiveLabel().then {
+        $0.font = UIFont.systemFont(ofSize: 20)
+        $0.mentionColor = .twitterBlue
+        $0.hashtagColor = .twitterBlue
+        $0.numberOfLines = 0
+    }
+    
+    private let dateLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.textColor = .lightGray
+        $0.textAlignment = .left
+    }
+    
+    private lazy var optionsButton = UIButton(type: .system).then {
+        $0.tintColor = .lightGray
+        $0.setImage(UIImage(resource: .downArrow24Pt), for: .normal)
+        $0.addTarget(self, action: #selector(showActionSheet), for: .touchUpInside)
+    }
     
     private let retweetsLabel = UILabel()
     private let likesLabel = UILabel()
     
-    private lazy var statsView: UIView = {
-        let view = UIView()
-        
-        let dividerView = UIView()
-        dividerView.backgroundColor = .systemGroupedBackground
-        view.addSubview(dividerView)
-        dividerView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 8, height: 1.0)
-        
-        let stackView = UIStackView(arrangedSubviews: [retweetsLabel, likesLabel])
-        stackView.axis = .horizontal
-        stackView.spacing = 12
-        
-        view.addSubview(stackView)
-        stackView.centerY(inView: view)
-        stackView.anchor(left: view.leftAnchor, paddingLeft: 16)
-        
-        let secondDividerView = UIView()
-        secondDividerView.backgroundColor = .systemGroupedBackground
-        view.addSubview(secondDividerView)
-        secondDividerView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingLeft: 8, height: 1.0)
-        
-        return view
-    }()
+    private lazy var statsStackView = UIStackView(arrangedSubviews: [retweetsLabel, likesLabel]).then {
+        $0.spacing = 12
+        $0.axis = .horizontal
+    }
     
-    private lazy var commentButton: UIButton = {
-        let button = createButton(withImageName: "comment")
-        button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
-        
-        return button
-    }()
+    private let upperDividerView = UIView().then {
+        $0.backgroundColor = .systemGroupedBackground
+    }
     
-    private lazy var retweetButton: UIButton = {
-        let button = createButton(withImageName: "retweet")
-        button.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
-        
-        return button
-    }()
+    private let lowerDividerView = UIView().then {
+        $0.backgroundColor = .systemGroupedBackground
+    }
     
-    private lazy var likeButton: UIButton = {
-        let button = createButton(withImageName: "like")
-        button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
+    private lazy var statsView = UIView().then { view in
+        view.addSubview(upperDividerView)
+        upperDividerView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.directionalHorizontalEdges.equalToSuperview().inset(8)
+            make.height.equalTo(1)
+        }
         
-        return button
-    }()
+        view.addSubview(statsStackView)
+        statsStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(16)
+        }
+        
+        view.addSubview(lowerDividerView)
+        lowerDividerView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.directionalHorizontalEdges.equalToSuperview().inset(8)
+            make.height.equalTo(1)
+        }
+    }
     
-    private lazy var shareButton: UIButton = {
-        let button = createButton(withImageName: "share")
-        button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
-        
-        return button
-    }()
+    private lazy var commentButton = createButton(withImageName: "comment").then {
+        $0.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
+    }
+    
+    private lazy var retweetButton = createButton(withImageName: "retweet").then {
+        $0.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
+    }
+    
+    private lazy var likeButton = createButton(withImageName: "like").then {
+        $0.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
+    }
+    
+    private lazy var shareButton = createButton(withImageName: "share").then {
+        $0.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
+    }
+    
+    private lazy var actionStackView = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton]).then {
+        $0.spacing = 72
+    }
     
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        let labelStackView = UIStackView(arrangedSubviews: [fullNameLabel, usernameLabel])
-        labelStackView.axis = .vertical
-        labelStackView.spacing = -6
-        
-        let profileStackView = UIStackView(arrangedSubviews: [profileImageView, labelStackView])
-        profileStackView.spacing = 12
-        
-        let stackView = UIStackView(arrangedSubviews: [replyLabel, profileStackView])
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        stackView.distribution = .fillProportionally
-        
-        addSubview(stackView)
-        stackView.anchor(top: topAnchor, left: leftAnchor, paddingTop: 16, paddingLeft: 16)
-        
-        addSubview(optionsButton)
-        optionsButton.centerY(inView: profileStackView)
-        optionsButton.anchor(right: rightAnchor, paddingRight: 8)
-        
-        addSubview(captionLabel)
-        captionLabel.anchor(top: profileStackView.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 12, paddingLeft: 16, paddingRight: 16)
-        
-        addSubview(dateLabel)
-        dateLabel.anchor(top: captionLabel.bottomAnchor, left: leftAnchor, paddingTop: 20, paddingLeft: 16)
-        
-        addSubview(statsView)
-        statsView.anchor(top: dateLabel.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 12, height: 40)
-        
-        let actionStackView = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
-        actionStackView.spacing = 72
-        
-        addSubview(actionStackView)
-        actionStackView.centerX(inView: self)
-        actionStackView.anchor(top: statsView.bottomAnchor, paddingTop: 16)
-        
+        configureUI()
         configureMentionHandler()
     }
     
@@ -198,41 +161,41 @@ class TweetHeader: UICollectionReusableView {
     
     // MARK: - Selectors
     
-    @objc func handleProfileImageTapped() {
+    @objc private func handleProfileImageTapped() {
         print("DEBUG: Go to user profile..")
     }
     
-    @objc func showActionSheet() {
+    @objc private func showActionSheet() {
         delegate?.showActionSheet()
     }
     
-    @objc func handleCommentTapped() {
+    @objc private func handleCommentTapped() {
         
     }
     
-    @objc func handleRetweetTapped() {
+    @objc private func handleRetweetTapped() {
         
     }
     
-    @objc func handleLikeTapped() {
+    @objc private func handleLikeTapped() {
         
     }
     
-    @objc func handleShareTapped() {
+    @objc private func handleShareTapped() {
         
     }
     
     // MARK: - Helpers
     
-    func configure() {
+    private func configure() {
         guard let tweet = tweet else { return }
         
         let viewModel = TweetViewModel(tweet: tweet)
         captionLabel.text = tweet.caption
         fullNameLabel.text = tweet.user.fullName
         usernameLabel.text = viewModel.usernameText
-        profileImageView.kf.setImage(with: viewModel.profileImageUrl)
         dateLabel.text = viewModel.headerTimestamp
+        profileImageView.kf.setImage(with: viewModel.profileImageUrl)
         retweetsLabel.attributedText = viewModel.retweetsAttributedString
         likesLabel.attributedText = viewModel.likesAttributedString
         likeButton.setImage(viewModel.likeButtonImage, for: .normal)
@@ -241,7 +204,7 @@ class TweetHeader: UICollectionReusableView {
         replyLabel.text = viewModel.replyText
     }
     
-    func createButton(withImageName imageName: String) -> UIButton {
+    private func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)
         let imageResource = ImageResource(name: imageName, bundle: .main)
         button.setImage(UIImage(resource: imageResource), for: .normal)
@@ -251,7 +214,46 @@ class TweetHeader: UICollectionReusableView {
         return button
     }
     
-    func configureMentionHandler() {
+    private func configureUI() {
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().inset(16)
+        }
+        
+        addSubview(optionsButton)
+        optionsButton.snp.makeConstraints { make in
+            make.centerY.equalTo(profileStackView)
+            make.trailing.equalToSuperview().inset(8)
+        }
+        
+        addSubview(captionLabel)
+        captionLabel.snp.makeConstraints { make in
+            make.top.equalTo(profileStackView.snp.bottom).offset(12)
+            make.directionalHorizontalEdges.equalToSuperview().inset(16)
+        }
+        
+        addSubview(dateLabel)
+        dateLabel.snp.makeConstraints { make in
+            make.top.equalTo(captionLabel.snp.bottom).offset(20)
+            make.leading.equalToSuperview().inset(16)
+        }
+        
+        addSubview(statsView)
+        statsView.snp.makeConstraints { make in
+            make.top.equalTo(dateLabel.snp.bottom).offset(12)
+            make.directionalHorizontalEdges.equalToSuperview()
+            make.height.equalTo(40)
+        }
+        
+        addSubview(actionStackView)
+        actionStackView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(statsView.snp.bottom).offset(16)
+        }
+    }
+    
+    private func configureMentionHandler() {
         captionLabel.handleMentionTap { username in
             self.delegate?.handleFetchUser(withUsername: username)
         }

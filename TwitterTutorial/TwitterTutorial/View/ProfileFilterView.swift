@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/4/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 private let reuseIdentifier = "ProfileFilterCell"
@@ -19,35 +21,22 @@ class ProfileFilterView: UIView {
     
     weak var delegate: ProfileFilterViewDelegate?
     
-    lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        
-        return collectionView
-    }()
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+        $0.delegate = self
+        $0.dataSource = self
+        $0.backgroundColor = .systemBackground
+    }
     
-    private let underlineView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .twitterBlue
-        
-        return view
-    }()
+    private let underlineView = UIView().then {
+        $0.backgroundColor = .twitterBlue
+    }
     
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
-        let selectedIndexPath = IndexPath(item: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
-        
-        addSubview(collectionView)
-        collectionView.addConstraintsToFillView(self)
+        configureUI()
+        configureCollectionView()
     }
     
     required init?(coder: NSCoder) {
@@ -57,7 +46,26 @@ class ProfileFilterView: UIView {
     override func layoutSubviews() {
         addSubview(underlineView)
         let count = CGFloat(ProfileFilterOptions.allCases.count)
-        underlineView.anchor(left: leftAnchor, bottom: bottomAnchor, width: frame.width / count, height: 2)
+        underlineView.snp.makeConstraints { make in
+            make.leading.bottom.equalToSuperview()
+            make.width.equalTo(frame.width / count)
+            make.height.equalTo(2)
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func configureUI() {
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.directionalEdges.equalToSuperview()
+        }
+    }
+    
+    private func configureCollectionView() {
+        let selectedIndexPath = IndexPath(item: 0, section: 0)
+        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
+        collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: reuseIdentifier)
     }
 }
 

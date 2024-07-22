@@ -21,8 +21,9 @@ class NotificationsController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
         fetchNotifications()
+        configureUI()
+        configureTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -32,7 +33,7 @@ class NotificationsController: UITableViewController {
     
     // MARK: - API
     
-    func fetchNotifications() {
+    private func fetchNotifications() {
         refreshControl?.beginRefreshing()
         
         NotificationService.shared.fetchNotifications { notifications in
@@ -42,7 +43,7 @@ class NotificationsController: UITableViewController {
         }
     }
     
-    func checkIfUserIsFollowed(notifications: [Notification]) {
+    private func checkIfUserIsFollowed(notifications: [Notification]) {
         guard !notifications.isEmpty else { return }
         
         notifications.forEach { notification in
@@ -61,23 +62,25 @@ class NotificationsController: UITableViewController {
     
     // MARK: - Selectors
     
-    @objc func handleRefresh() {
+    @objc private func handleRefresh() {
         fetchNotifications()
     }
     
     // MARK: - Helpers
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
         navigationItem.title = "Notifications"
+    }
+    
+    private func configureTableView() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         
-        tableView.register(NotificationCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
         tableView.separatorStyle = .none
-        
-        let refreshControl = UIRefreshControl()
         tableView.refreshControl = refreshControl
-        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        tableView.register(NotificationCell.self, forCellReuseIdentifier: reuseIdentifier)
     }
 }
 

@@ -6,6 +6,8 @@
 //
 
 import Firebase
+import SnapKit
+import Then
 import UIKit
 
 enum ActionButtonConfiguration {
@@ -17,8 +19,6 @@ class MainTabController: UITabBarController {
     
     // MARK: - Properties
     
-    private var actionButtonConfig: ActionButtonConfiguration = .tweet
-    
     var user: User? {
         didSet {
             guard let navigationController = viewControllers?[0] as? UINavigationController else { return }
@@ -27,28 +27,26 @@ class MainTabController: UITabBarController {
             feedController.user = user
         }
     }
-    
-    lazy var actionButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.tintColor = .white
-        button.backgroundColor = .twitterBlue
-        button.setImage(UIImage(resource: .newTweet), for: .normal)
-        button.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
         
-        return button
-    }()
+    private lazy var actionButton = UIButton(type: .system).then {
+        $0.tintColor = .systemBackground
+        $0.backgroundColor = .twitterBlue
+        $0.setImage(UIImage(resource: .newTweet), for: .normal)
+        $0.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+    }
+    
+    private var actionButtonConfig: ActionButtonConfiguration = .tweet
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .twitterBlue
         authenticateUserAndConfigureUI()
     }
     
     // MARK: - API
     
-    func fetchUser() {
+    private func fetchUser() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
         UserService.shared.fetchUser(userId: userId) { user in
@@ -57,6 +55,8 @@ class MainTabController: UITabBarController {
     }
     
     func authenticateUserAndConfigureUI() {
+        view.backgroundColor = .twitterBlue
+        
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
                 let navigationController = UINavigationController(rootViewController: LoginController())
@@ -64,15 +64,15 @@ class MainTabController: UITabBarController {
                 self.present(navigationController, animated: true)
             }
         } else {
+            fetchUser()
             configureUI()
             configureViewControllers()
-            fetchUser()
         }
     }
     
     // MARK: - Selectors
     
-    @objc func actionButtonTapped() {
+    @objc private func actionButtonTapped() {
         let controller: UIViewController
         
         switch actionButtonConfig {
@@ -91,24 +91,27 @@ class MainTabController: UITabBarController {
     
     // MARK: - Helpers
     
-    func configureUI() {
-        delegate = self
-        
+    private func configureUI() {
         view.addSubview(actionButton)
-        actionButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, paddingBottom: 64, paddingRight: 16, width: 56, height: 56)
         actionButton.layer.cornerRadius = 56 / 2
+        actionButton.snp.makeConstraints { make in
+            make.height.width.equalTo(56)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(64)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
     }
     
-    func configureViewControllers() {
+    private func configureViewControllers() {
         let feed = templateNavigationController(image: UIImage(resource: .homeUnselected), rootViewController: FeedController(collectionViewLayout: UICollectionViewFlowLayout()))
         let search = templateNavigationController(image: UIImage(resource: .searchUnselected), rootViewController: SearchController(config: .userSearch))
         let notifications = templateNavigationController(image: UIImage(resource: .likeUnselected), rootViewController: NotificationsController())
         let conversations = templateNavigationController(image: UIImage(resource: .icMailOutlineWhite2X1), rootViewController: ConversationsController())
         
+        delegate = self
         viewControllers = [feed, search, notifications, conversations]
     }
     
-    func templateNavigationController(image: UIImage, rootViewController: UIViewController) -> UINavigationController {
+    private func templateNavigationController(image: UIImage, rootViewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.tabBarItem.image = image
         

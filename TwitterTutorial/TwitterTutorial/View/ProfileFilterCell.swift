@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/4/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 class ProfileFilterCell: UICollectionViewCell {
@@ -15,14 +17,10 @@ class ProfileFilterCell: UICollectionViewCell {
         didSet { titleLabel.text = option?.description }
     }
     
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Test filter"
-        
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.textColor = .lightGray
+        $0.font = UIFont.systemFont(ofSize: 14)
+    }
     
     override var isSelected: Bool {
         didSet {
@@ -35,13 +33,19 @@ class ProfileFilterCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
-        
-        addSubview(titleLabel)
-        titleLabel.center(inView: self)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Helpers
+    
+    private func configureUI() {
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
 }

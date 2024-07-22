@@ -6,6 +6,8 @@
 //
 
 import Firebase
+import SnapKit
+import Then
 import UIKit
 
 class RegistrationController: UIViewController {
@@ -15,87 +17,46 @@ class RegistrationController: UIViewController {
     private let imagePicker = UIImagePickerController()
     private var profileImage: UIImage?
     
-    private lazy var plusPhotoButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(resource: .plusPhoto), for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(handleAddProfilePhoto), for: .touchUpInside)
-        
-        return button
-    }()
+    private lazy var plusPhotoButton = UIButton(type: .system).then {
+        $0.tintColor = .white
+        $0.setImage(UIImage(resource: .plusPhoto), for: .normal)
+        $0.addTarget(self, action: #selector(handleAddProfilePhoto), for: .touchUpInside)
+    }
     
-    private lazy var emailContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_mail_outline_white_2x-1")
-        let view = Utilities().inputContainerView(withImage: image, textField: emailTextField)
-        
-        return view
-    }()
+    private lazy var emailContainerView = Utilities().inputContainerView(withImage: UIImage(resource: .icMailOutlineWhite2X1), textField: emailTextField)
+    private lazy var passwordContainerView = Utilities().inputContainerView(withImage: UIImage(resource: .icLockOutlineWhite2X), textField: passwordTextField)
+    private lazy var fullNameContainerView = Utilities().inputContainerView(withImage: UIImage(resource: .icPersonOutlineWhite2X), textField: fullNameTextField)
+    private lazy var usernameContainerView = Utilities().inputContainerView(withImage: UIImage(resource: .icPersonOutlineWhite2X), textField: usernameTextField)
     
-    private lazy var passwordContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_lock_outline_white_2x")
-        let view = Utilities().inputContainerView(withImage: image, textField: passwordTextField)
-        
-        return view
-    }()
+    private let emailTextField = Utilities().textField(withPlaceholder: "Email").then {
+        $0.autocapitalizationType = .none
+    }
     
-    private lazy var fullNameContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_person_outline_white_2x")
-        let view = Utilities().inputContainerView(withImage: image, textField: fullNameTextField)
-        
-        return view
-    }()
+    private let passwordTextField = Utilities().textField(withPlaceholder: "Password").then {
+        $0.isSecureTextEntry = true
+    }
     
-    private lazy var usernameContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_person_outline_white_2x")
-        let view = Utilities().inputContainerView(withImage: image, textField: usernameTextField)
-        
-        return view
-    }()
+    private let fullNameTextField = Utilities().textField(withPlaceholder: "Full Name")
+    private let usernameTextField = Utilities().textField(withPlaceholder: "Username")
     
-    private let emailTextField: UITextField = {
-        let textField = Utilities().textField(withPlaceholder: "Email")
-        
-        return textField
-    }()
-    
-    private let passwordTextField: UITextField = {
-        let textField = Utilities().textField(withPlaceholder: "Password")
-        textField.isSecureTextEntry = true
-        
-        return textField
-    }()
-    
-    private let fullNameTextField: UITextField = {
-        let textField = Utilities().textField(withPlaceholder: "Full Name")
-        
-        return textField
-    }()
-    
-    private let usernameTextField: UITextField = {
-        let textField = Utilities().textField(withPlaceholder: "Username")
-        
-        return textField
-    }()
-    
-    private lazy var registrationButton: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var registrationButton = UIButton(type: .system).then { button in
         button.setTitle("Sign Up", for: .normal)
         button.setTitleColor(.twitterBlue, for: .normal)
-        button.backgroundColor = .white
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.layer.cornerRadius = 5
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.layer.cornerRadius = 5
+        button.backgroundColor = .white
         button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
-        
-        return button
-    }()
+    }
     
-    private lazy var alreadyHaveAccountButton: UIButton = {
-        let button = Utilities().attributedButton("Already have an account?", " Log In")
-        button.addTarget(self, action: #selector(handleShowLogin), for: .touchUpInside)
-        
-        return button
-    }()
+    private lazy var stackView = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullNameContainerView, usernameContainerView, registrationButton]).then {
+        $0.spacing = 20
+        $0.axis = .vertical
+        $0.distribution = .fillEqually
+    }
+    
+    private lazy var alreadyHaveAccountButton = Utilities().attributedButton("Already have an account?", " Log In").then {
+        $0.addTarget(self, action: #selector(handleShowLogin), for: .touchUpInside)
+    }
     
     // MARK: - Lifecycle
     
@@ -106,11 +67,11 @@ class RegistrationController: UIViewController {
     
     // MARK: - Selectors
     
-    @objc func handleAddProfilePhoto() {
+    @objc private func handleAddProfilePhoto() {
         present(imagePicker, animated: true)
     }
     
-    @objc func handleRegistration() {
+    @objc private func handleRegistration() {
         guard let profileImage = profileImage else {
             print("DEBUG: Please select a profile image..")
             return
@@ -130,32 +91,42 @@ class RegistrationController: UIViewController {
         }
     }
     
-    @objc func handleShowLogin() {
+    @objc private func handleShowLogin() {
         navigationController?.popViewController(animated: true)
     }
     
     // MARK: - Helpers
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .twitterBlue
         
         imagePicker.delegate = self
         imagePicker.allowsEditing = true
         
         view.addSubview(plusPhotoButton)
-        plusPhotoButton.centerX(inView: view, topAnchor: view.safeAreaLayoutGuide.topAnchor)
-        plusPhotoButton.setDimensions(width: 128, height: 128)
+        plusPhotoButton.snp.makeConstraints { make in
+            make.width.height.equalTo(128)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+        }
         
-        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullNameContainerView, usernameContainerView, registrationButton])
-        stack.axis = .vertical
-        stack.spacing = 20
-        stack.distribution = .fillEqually
+        view.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(plusPhotoButton.snp.bottom).offset(32)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
         
-        view.addSubview(stack)
-        stack.anchor(top: plusPhotoButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
+        registrationButton.snp.makeConstraints { make in
+            make.height.equalTo(50)
+            make.leading.trailing.equalToSuperview()
+        }
         
         view.addSubview(alreadyHaveAccountButton)
-        alreadyHaveAccountButton.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, paddingLeft: 40, paddingRight: 40)
+        alreadyHaveAccountButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
     }
 }
 

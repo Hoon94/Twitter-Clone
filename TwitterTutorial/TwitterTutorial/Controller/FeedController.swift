@@ -6,6 +6,8 @@
 //
 
 import Kingfisher
+import SnapKit
+import Then
 import UIKit
 
 private let reuseIdentifier = "TweetCell"
@@ -22,12 +24,21 @@ class FeedController: UICollectionViewController {
         didSet { collectionView.reloadData() }
     }
     
+    private let logoImageView = UIImageView(image: UIImage(resource: .twitterLogoBlue)).then {
+        $0.contentMode = .scaleAspectFit
+        
+        $0.snp.makeConstraints { make in
+            make.width.height.equalTo(44)
+        }
+    }
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
         fetchTweets()
+        configureUI()
+        configureCollectionView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,18 +48,17 @@ class FeedController: UICollectionViewController {
     
     // MARK: - API
     
-    func fetchTweets() {
+    private func fetchTweets() {
         collectionView.refreshControl?.beginRefreshing()
         
         TweetService.shared.fetchTweets { tweets in
             self.tweets = tweets.sorted { $0.timestamp ?? Date() > $1.timestamp ?? Date() }
             self.checkIfUserLikedTweets()
-            
             self.collectionView.refreshControl?.endRefreshing()
         }
     }
     
-    func checkIfUserLikedTweets() {
+    private func checkIfUserLikedTweets() {
         tweets.forEach { tweet in
             TweetService.shared.checkIfUserLikedTweet(tweet) { didLike in
                 guard didLike == true else { return }
@@ -62,11 +72,11 @@ class FeedController: UICollectionViewController {
     
     // MARK: - Selectors
     
-    @objc func handleRefresh() {
+    @objc private func handleRefresh() {
         fetchTweets()
     }
     
-    @objc func handleProfileImageTap() {
+    @objc private func handleProfileImageTap() {
         guard let user = user else { return }
         
         let controller = ProfileController(user: user)
@@ -75,35 +85,37 @@ class FeedController: UICollectionViewController {
     
     // MARK: - Helpers
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
-        
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.backgroundColor = .white
-        
-        let imageView = UIImageView(image: UIImage(resource: .twitterLogoBlue))
-        imageView.contentMode = .scaleAspectFit
-        imageView.setDimensions(width: 44, height: 44)
-        navigationItem.titleView = imageView
-        
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
-        collectionView.refreshControl = refreshControl
+        navigationItem.titleView = logoImageView
     }
     
-    func configureLeftBarButton() {
+    private func configureCollectionView() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        
+        collectionView.refreshControl = refreshControl
+        collectionView.backgroundColor = .systemBackground
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+    }
+    
+    private func configureLeftBarButton() {
         guard let user = user else { return }
         
         let profileImageView = UIImageView()
-        profileImageView.setDimensions(width: 32, height: 32)
+        
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
         profileImageView.isUserInteractionEnabled = true
+        profileImageView.kf.setImage(with: user.profileImageUrl)
+        
+        profileImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(32)
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
         profileImageView.addGestureRecognizer(tapGesture)
         
-        profileImageView.kf.setImage(with: user.profileImageUrl)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
     }
 }

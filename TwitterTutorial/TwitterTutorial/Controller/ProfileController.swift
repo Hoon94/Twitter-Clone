@@ -49,12 +49,8 @@ class ProfileController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchUserProfile()
         configureCollectionView()
-        fetchTweets()
-        fetchRepliedTweets()
-        fetchLikedTweets()
-        checkIfUserIsFollowed()
-        fetchUserStats()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,33 +60,41 @@ class ProfileController: UICollectionViewController {
     
     // MARK: - API
     
-    func fetchTweets() {
+    private func fetchUserProfile() {
+        fetchTweets()
+        fetchRepliedTweets()
+        fetchLikedTweets()
+        checkIfUserIsFollowed()
+        fetchUserStats()
+    }
+    
+    private func fetchTweets() {
         TweetService.shared.fetchTweets(forUser: user) { tweets in
             self.tweets = tweets
             self.collectionView.reloadData()
         }
     }
     
-    func fetchRepliedTweets() {
+    private func fetchRepliedTweets() {
         TweetService.shared.fetchReplies(forUser: user) { tweets in
             self.replies = tweets
         }
     }
     
-    func fetchLikedTweets() {
+    private func fetchLikedTweets() {
         TweetService.shared.fetchLikes(forUser: user) { tweets in
             self.likes = tweets
         }
     }
     
-    func checkIfUserIsFollowed() {
+    private func checkIfUserIsFollowed() {
         UserService.shared.checkIfUserIsFollowed(userId: user.userId) { isFollowed in
             self.user.isFollowed = isFollowed
             self.collectionView.reloadData()
         }
     }
     
-    func fetchUserStats() {
+    private func fetchUserStats() {
         UserService.shared.fetchUserStats(userId: user.userId) { stats in
             self.user.stats = stats
             self.collectionView.reloadData()
@@ -99,7 +103,7 @@ class ProfileController: UICollectionViewController {
     
     // MARK: - Helpers
     
-    func configureCollectionView() {
+    private func configureCollectionView() {
         collectionView.backgroundColor = .white
         collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
@@ -195,17 +199,17 @@ extension ProfileController: ProfileHeaderDelegate {
         if user.isFollowed {
             UserService.shared.unfollowUser(userId: user.userId) { error, reference in
                 self.user.isFollowed = false
-                self.collectionView.reloadData()
+                self.fetchUserStats()
                 print("DEBUG: Unfollow the user..")
             }
         } else {
             UserService.shared.followUser(userId: user.userId) { error, reference in
                 self.user.isFollowed = true
-                self.collectionView.reloadData()
+                self.fetchUserStats()
                 NotificationService.shared.uploadNotification(toUser: self.user, type: .follow)
                 print("DEBUG: Follow the user..")
             }
-        }
+        }        
     }
     
     func didSelect(filter: ProfileFilterOptions) {

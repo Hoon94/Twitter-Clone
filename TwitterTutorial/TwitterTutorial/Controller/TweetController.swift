@@ -33,8 +33,8 @@ class TweetController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureCollectionView()
         fetchReplies()
+        configureCollectionView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,7 +44,7 @@ class TweetController: UICollectionViewController {
     
     // MARK: - API
     
-    func fetchReplies() {
+    private func fetchReplies() {
         TweetService.shared.fetchReplies(forTweet: tweet) { replies in
             self.replies = replies
         }
@@ -52,14 +52,13 @@ class TweetController: UICollectionViewController {
     
     // MARK: - Helpers
     
-    func configureCollectionView() {
+    private func configureCollectionView() {
         collectionView.backgroundColor = .white
-        
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.register(TweetHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
     }
     
-    func showActionSheet(forUser user: User) {
+    private func showActionSheet(forUser user: User) {
         actionSheetLauncher = ActionSheetLauncher(user: user)
         actionSheetLauncher?.delegate = self
         actionSheetLauncher?.show()

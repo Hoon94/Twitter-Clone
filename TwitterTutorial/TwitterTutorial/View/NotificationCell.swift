@@ -6,6 +6,8 @@
 //
 
 import Kingfisher
+import SnapKit
+import Then
 import UIKit
 
 protocol NotificationCellDelegate: AnyObject {
@@ -23,62 +25,44 @@ class NotificationCell: UITableViewCell {
     
     weak var delegate: NotificationCellDelegate?
     
-    private lazy var profileImageView: UIImageView = {
-        let imageView = UIImageView()
+    private lazy var profileImageView = UIImageView().then { imageView in
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.setDimensions(width: 40, height: 40)
         imageView.layer.cornerRadius = 40 / 2
         imageView.backgroundColor = .twitterBlue
+        
+        imageView.snp.makeConstraints { make in
+            make.size.equalTo(40)
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTapped))
         imageView.addGestureRecognizer(tapGesture)
         imageView.isUserInteractionEnabled = true
-        
-        return imageView
-    }()
+    }
     
-    private let notificationLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 2
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Some test notification message"
-        
-        return label
-    }()
+    private let notificationLabel = UILabel().then {
+        $0.numberOfLines = 2
+        $0.font = UIFont.systemFont(ofSize: 14)
+    }
     
-    private lazy var followButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Loading", for: .normal)
+    private lazy var stackView = UIStackView(arrangedSubviews: [profileImageView, notificationLabel]).then {
+        $0.spacing = 8
+        $0.alignment = .center
+    }
+    
+    private lazy var followButton = UIButton(type: .system).then { button in
         button.setTitleColor(.twitterBlue, for: .normal)
-        button.backgroundColor = .white
-        button.layer.borderColor = UIColor.twitterBlue.cgColor
+        button.backgroundColor = .systemBackground
         button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.twitterBlue.cgColor
         button.addTarget(self, action: #selector(handleFollowTapped), for: .touchUpInside)
-        
-        return button
-    }()
+    }
     
     // MARK: - Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
-        
-        let stackView = UIStackView(arrangedSubviews: [profileImageView, notificationLabel])
-        stackView.spacing = 8
-        stackView.alignment = .center
-        
-        contentView.addSubview(stackView)
-        stackView.centerY(inView: self, leftAnchor: leftAnchor, paddingLeft: 12)
-        stackView.anchor(right: rightAnchor, paddingRight: 12)
-        
-        contentView.addSubview(followButton)
-        followButton.centerY(inView: self)
-        followButton.setDimensions(width: 92, height: 32)
-        followButton.layer.cornerRadius = 32 / 2
-        followButton.anchor(right: rightAnchor, paddingRight: 12)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -87,17 +71,17 @@ class NotificationCell: UITableViewCell {
     
     // MARK: - Selectors
     
-    @objc func handleProfileImageTapped() {
+    @objc private func handleProfileImageTapped() {
         delegate?.didTapProfileImage(self)
     }
     
-    @objc func handleFollowTapped() {
+    @objc private func handleFollowTapped() {
         delegate?.didTapFollowButton(self)
     }
     
     // MARK: - Helpers
     
-    func configure() {
+    private func configure() {
         guard let notification = notification else { return }
         
         let viewModel = NotificationViewModel(notification: notification)
@@ -105,5 +89,24 @@ class NotificationCell: UITableViewCell {
         notificationLabel.attributedText = viewModel.notificationText
         followButton.isHidden = viewModel.shouldHideFollowButton
         followButton.setTitle(viewModel.followButtonText, for: .normal)
+    }
+    
+    private func configureUI() {
+        selectionStyle = .none
+        
+        contentView.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.directionalHorizontalEdges.equalToSuperview().inset(12)
+        }
+        
+        contentView.addSubview(followButton)
+        followButton.layer.cornerRadius = 32 / 2
+        followButton.snp.makeConstraints { make in
+            make.width.equalTo(92)
+            make.height.equalTo(32)
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview().inset(12)
+        }
     }
 }

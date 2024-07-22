@@ -58,6 +58,8 @@
 		78602C4E2C44B62E004B9BD4 /* EditProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78602C4D2C44B62E004B9BD4 /* EditProfileCell.swift */; };
 		78602C512C451D90004B9BD4 /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 78602C502C451D90004B9BD4 /* ActiveLabel */; };
 		78602C532C460126004B9BD4 /* EditProfileFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78602C522C460126004B9BD4 /* EditProfileFooter.swift */; };
+		78602C562C48DF80004B9BD4 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 78602C552C48DF80004B9BD4 /* SnapKit */; };
+		78602C5A2C48E184004B9BD4 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 78602C592C48E184004B9BD4 /* Then */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -118,6 +120,8 @@
 				785FA0242C330D2F00C33A6D /* FirebaseDatabase in Frameworks */,
 				78602C512C451D90004B9BD4 /* ActiveLabel in Frameworks */,
 				785FA0262C330D2F00C33A6D /* FirebaseStorage in Frameworks */,
+				78602C5A2C48E184004B9BD4 /* Then in Frameworks */,
+				78602C562C48DF80004B9BD4 /* SnapKit in Frameworks */,
 				785FA0202C330D2F00C33A6D /* FirebaseAnalytics in Frameworks */,
 				785FA0222C330D2F00C33A6D /* FirebaseAuth in Frameworks */,
 				785FA0352C344FFE00C33A6D /* Kingfisher in Frameworks */,
@@ -146,14 +150,13 @@
 		785F9FEE2C32A4C100C33A6D /* TwitterTutorial */ = {
 			isa = PBXGroup;
 			children = (
+				78602C572C48DF9E004B9BD4 /* App */,
 				785FA0082C32A89B00C33A6D /* Model */,
 				785FA0072C32A88D00C33A6D /* View */,
 				785FA0062C32A88A00C33A6D /* ViewModel */,
 				785FA0052C32A88800C33A6D /* Controller */,
 				785FA0042C32A88500C33A6D /* API */,
 				785FA0032C32A87900C33A6D /* Utils */,
-				785F9FEF2C32A4C100C33A6D /* AppDelegate.swift */,
-				785F9FF12C32A4C100C33A6D /* SceneDelegate.swift */,
 				785F9FF82C32A4C500C33A6D /* Assets.xcassets */,
 				785F9FFA2C32A4C500C33A6D /* LaunchScreen.storyboard */,
 				785FA01C2C33049A00C33A6D /* GoogleService-Info.plist */,
@@ -252,6 +255,15 @@
 			path = Authentication;
 			sourceTree = "<group>";
 		};
+		78602C572C48DF9E004B9BD4 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				785F9FEF2C32A4C100C33A6D /* AppDelegate.swift */,
+				785F9FF12C32A4C100C33A6D /* SceneDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -275,6 +287,8 @@
 				785FA0252C330D2F00C33A6D /* FirebaseStorage */,
 				785FA0342C344FFE00C33A6D /* Kingfisher */,
 				78602C502C451D90004B9BD4 /* ActiveLabel */,
+				78602C552C48DF80004B9BD4 /* SnapKit */,
+				78602C592C48E184004B9BD4 /* Then */,
 			);
 			productName = TwitterTutorial;
 			productReference = 785F9FEC2C32A4C100C33A6D /* TwitterTutorial.app */;
@@ -308,6 +322,8 @@
 				785FA01E2C330D2F00C33A6D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				785FA0332C344FFE00C33A6D /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				78602C4F2C451D90004B9BD4 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
+				78602C542C48DF80004B9BD4 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				78602C582C48E184004B9BD4 /* XCRemoteSwiftPackageReference "Then" */,
 			);
 			productRefGroup = 785F9FED2C32A4C100C33A6D /* Products */;
 			projectDirPath = "";
@@ -616,6 +632,22 @@
 				minimumVersion = 1.1.5;
 			};
 		};
+		78602C542C48DF80004B9BD4 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		78602C582C48E184004B9BD4 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -648,6 +680,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 78602C4F2C451D90004B9BD4 /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */;
 			productName = ActiveLabel;
+		};
+		78602C552C48DF80004B9BD4 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78602C542C48DF80004B9BD4 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		78602C592C48E184004B9BD4 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78602C582C48E184004B9BD4 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/6/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 private let reuseIdentifier = "ActionSheetCell"
@@ -19,52 +21,44 @@ class ActionSheetLauncher: NSObject {
     
     private let user: User
     private let tableView = UITableView()
-    private var window: UIWindow?
-    private var tableViewHeight: CGFloat?
     private lazy var viewModel = ActionSheetViewModel(user: user)
+    private lazy var actionSheetHeight = CGFloat(viewModel.options.count * 60) + 100
     
     weak var delegate: ActionSheetLauncherDelegate?
     
-    private lazy var blackView: UIView = {
-        let view = UIView()
+    private lazy var blackView = UIView().then { view in
         view.alpha = 0
         view.backgroundColor = UIColor(white: 0, alpha: 0.5)
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDismissal))
         view.addGestureRecognizer(tapGesture)
-        
-        return view
-    }()
+    }
     
-    private lazy var footerView: UIView = {
-        let view = UIView()
-        
+    private lazy var footerView = UIView().then { view in
         view.addSubview(cancelButton)
-        cancelButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        cancelButton.anchor(left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 12, paddingRight: 12)
-        cancelButton.centerY(inView: view)
-        cancelButton.layer.cornerRadius = 50 / 2
         
-        return view
-    }()
+        cancelButton.snp.makeConstraints { make in
+            make.height.equalTo(50)
+            make.directionalHorizontalEdges.equalToSuperview().inset(12)
+            make.centerY.equalToSuperview()
+        }
+        
+        cancelButton.layer.cornerRadius = 50 / 2
+    }
     
-    private lazy var cancelButton: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var cancelButton = UIButton(type: .system).then { button in
         button.setTitle("Cancel", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         button.setTitleColor(.black, for: .normal)
         button.backgroundColor = .systemGroupedBackground
         button.addTarget(self, action: #selector(handleDismissal), for: .touchUpInside)
-        
-        return button
-    }()
+    }
     
     // MARK: - Lifecycle
     
     init(user: User) {
         self.user = user
         super.init()
-        
         configureTableView()
     }
     
@@ -73,7 +67,10 @@ class ActionSheetLauncher: NSObject {
     @objc func handleDismissal() {
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            self.tableView.frame.origin.y += 300
+            self.tableView.frame.origin.y += self.actionSheetHeight
+        } completion: { _ in
+            self.blackView.removeFromSuperview()
+            self.tableView.removeFromSuperview()
         }
     }
     
@@ -87,34 +84,23 @@ class ActionSheetLauncher: NSObject {
         blackView.frame = window.frame
         
         window.addSubview(tableView)
-        let height = CGFloat(viewModel.options.count * 60) + 100
-        self.tableViewHeight = height
-        tableView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: height)
-        
-        self.window = window
-        
+        tableView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: actionSheetHeight)
+                
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 1
-            self.showTableView(true)
+            self.tableView.frame.origin.y -= self.actionSheetHeight
         }
     }
     
-    func showTableView(_ shouldShow: Bool) {
-        guard let window = window else { return }
-        guard let height = tableViewHeight else { return }
-        
-        let originY = shouldShow ? window.frame.height - height : window.frame.height
-        tableView.frame.origin.y = originY
-    }
-    
-    func configureTableView() {
-        tableView.backgroundColor = .white
+    private func configureTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        
         tableView.rowHeight = 60
         tableView.separatorStyle = .none
         tableView.layer.cornerRadius = 5
         tableView.isScrollEnabled = false
+        tableView.backgroundColor = .white
         
         tableView.register(ActionSheetCell.self, forCellReuseIdentifier: reuseIdentifier)
     }
@@ -152,7 +138,7 @@ extension ActionSheetLauncher: UITableViewDelegate {
         
         UIView.animate(withDuration: 0.5) {
             self.blackView.alpha = 0
-            self.showTableView(false)
+            self.tableView.frame.origin.y += self.actionSheetHeight
         } completion: { _ in
             self.delegate?.didSelect(option: option)
         }

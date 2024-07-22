@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/6/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 class ActionSheetCell: UITableViewCell {
@@ -15,36 +17,21 @@ class ActionSheetCell: UITableViewCell {
         didSet { configure() }
     }
     
-    private let optionImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
-        imageView.image = #imageLiteral(resourceName: "twitter_logo_blue")
-        
-        return imageView
-    }()
+    private let optionImageView = UIImageView().then {
+        $0.image = UIImage(resource: .twitterLogoBlue)
+        $0.contentMode = .scaleAspectFit
+        $0.clipsToBounds = true
+    }
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 18)
-        label.text = "Test Option"
-        
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 18)
+    }
     
     // MARK: - Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        addSubview(optionImageView)
-        optionImageView.centerY(inView: self)
-        optionImageView.anchor(left: leftAnchor, paddingLeft: 8)
-        optionImageView.setDimensions(width: 36, height: 36)
-        
-        addSubview(titleLabel)
-        titleLabel.centerY(inView: self)
-        titleLabel.anchor(left: optionImageView.rightAnchor, paddingLeft: 12)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -53,7 +40,22 @@ class ActionSheetCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    func configure() {
+    private func configure() {
         titleLabel.text = option?.description
+    }
+    
+    private func configureUI() {
+        addSubview(optionImageView)
+        optionImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(8)
+            make.size.equalTo(36)
+        }
+        
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(optionImageView.snp.trailing).offset(12)
+        }
     }
 }
