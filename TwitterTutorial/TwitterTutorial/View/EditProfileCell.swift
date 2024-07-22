@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/15/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 protocol EditProfileCellDelegate: AnyObject {
@@ -21,52 +23,29 @@ class EditProfileCell: UITableViewCell {
     
     weak var delegate: EditProfileCellDelegate?
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        
-        return label
-    }()
+    private let titleLabel = UILabel().then {
+        $0.font = UIFont.systemFont(ofSize: 14)
+    }
     
-    lazy var informationTextField: UITextField = {
-        let textField = UITextField()
-        textField.borderStyle = .none
-        textField.font = UIFont.systemFont(ofSize: 14)
-        textField.textAlignment = .left
-        textField.textColor = .twitterBlue
-        textField.addTarget(self, action: #selector(handleUpdateUserInformation), for: .editingDidEnd)
-        textField.text = "Test User Attribute"
-        
-        return textField
-    }()
+    lazy var informationTextField = UITextField().then {
+        $0.borderStyle = .none
+        $0.textAlignment = .left
+        $0.textColor = .twitterBlue
+        $0.font = UIFont.systemFont(ofSize: 14)
+        $0.addTarget(self, action: #selector(handleUpdateUserInformation), for: .editingDidEnd)
+    }
     
-    let bioTextView: InputTextView = {
-        let textView = InputTextView()
-        textView.font = UIFont.systemFont(ofSize: 14)
-        textView.textColor = .twitterBlue
-        textView.placeholderLabel.text = "Bio"
-        
-        return textView
-    }()
+    let bioTextView = InputTextView().then {
+        $0.textColor = .twitterBlue
+        $0.placeholderLabel.text = "Bio"
+        $0.font = UIFont.systemFont(ofSize: 14)
+    }
     
     // MARK: - Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
-        
-        contentView.addSubview(titleLabel)
-        titleLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        titleLabel.anchor(top: topAnchor, left: leftAnchor, paddingTop: 12, paddingLeft: 16)
-        
-        contentView.addSubview(informationTextField)
-        informationTextField.anchor(top: topAnchor, left: titleLabel.rightAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 4, paddingLeft: 16, paddingRight: 8)
-        
-        contentView.addSubview(bioTextView)
-        bioTextView.anchor(top: topAnchor, left: titleLabel.rightAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 4, paddingLeft: 12, paddingRight: 8)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateUserInformation), name: UITextView.textDidEndEditingNotification, object: nil)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -75,13 +54,13 @@ class EditProfileCell: UITableViewCell {
     
     // MARK: - Selectors
     
-    @objc func handleUpdateUserInformation() {
+    @objc private func handleUpdateUserInformation() {
         delegate?.updateUserInformation(self)
     }
     
     // MARK: - Helpers
     
-    func configure() {
+    private func configure() {
         guard let viewModel = viewModel else { return }
         
         titleLabel.text = viewModel.titleText
@@ -90,5 +69,34 @@ class EditProfileCell: UITableViewCell {
         bioTextView.text = viewModel.optionValue
         bioTextView.isHidden = viewModel.shouldHideTextView
         bioTextView.placeholderLabel.isHidden = viewModel.shouldHidePlaceholderLabel
+    }
+    
+    private func configureUI() {
+        selectionStyle = .none
+        
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.width.equalTo(100)
+            make.top.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().inset(16)
+        }
+        
+        contentView.addSubview(informationTextField)
+        informationTextField.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(-4)
+            make.bottom.equalToSuperview()
+            make.leading.equalTo(titleLabel.snp.trailing).offset(16)
+            make.trailing.equalToSuperview().inset(8)
+        }
+        
+        contentView.addSubview(bioTextView)
+        bioTextView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(4)
+            make.bottom.equalToSuperview()
+            make.leading.equalTo(titleLabel.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(8)
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateUserInformation), name: UITextView.textDidEndEditingNotification, object: nil)
     }
 }

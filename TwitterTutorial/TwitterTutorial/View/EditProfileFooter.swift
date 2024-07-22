@@ -5,6 +5,8 @@
 //  Created by Daehoon Lee on 7/16/24.
 //
 
+import SnapKit
+import Then
 import UIKit
 
 protocol EditProfileFooterDelegate: AnyObject {
@@ -17,27 +19,20 @@ class EditProfileFooter: UIView {
     
     weak var delegate: EditProfileFooterDelegate?
     
-    private lazy var logoutButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Logout", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
-        button.backgroundColor = .red
-        button.layer.cornerRadius = 5
-        
-        return button
-    }()
+    private lazy var logoutButton = UIButton(type: .system).then {
+        $0.setTitle("Logout", for: .normal)
+        $0.setTitleColor(.white, for: .normal)
+        $0.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        $0.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
+        $0.backgroundColor = .red
+        $0.layer.cornerRadius = 5
+    }
     
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        addSubview(logoutButton)
-        logoutButton.centerY(inView: self)
-        logoutButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        logoutButton.anchor(left: leftAnchor, right: rightAnchor, paddingLeft: 16, paddingRight: 16)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -46,7 +41,18 @@ class EditProfileFooter: UIView {
     
     // MARK: - Selectors
     
-    @objc func handleLogout() {
+    @objc private func handleLogout() {
         delegate?.handleLogout()
+    }
+    
+    // MARK: - Helpers
+    
+    private func configureUI() {
+        addSubview(logoutButton)
+        logoutButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.height.equalTo(50)
+            make.directionalHorizontalEdges.equalToSuperview().inset(16)
+        }
     }
 }
