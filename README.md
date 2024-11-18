@@ -92,9 +92,9 @@ class ProfileHeader: UICollectionReusableView {
 
 커스텀 델리게이트 패턴을 사용하는 경우와 클로저가 `self`를 캡처하는 경우에 기계적으로 `weak`를 써줄 때가 많았지만, 메모리 누수 상황을 실험하면서 약한 참조의 중요성을 확인할 수 있었습니다.
     
-<img width="250" src="https://hackmd.io/_uploads/SkqJYuuzkl.png">
+<img width="250" src="https://github.com/user-attachments/assets/a5d2ba8a-83c8-48c1-b31f-45242c71791a">
 
-<img width="250" src="https://hackmd.io/_uploads/SJNZYuOf1e.png">
+<img width="250" src="https://github.com/user-attachments/assets/9de15325-4cb6-4c07-b0f3-af7addf41e61">
 </details>
 
 <details>
@@ -102,7 +102,7 @@ class ProfileHeader: UICollectionReusableView {
     
 <br>
     
-<img width="300" src="https://hackmd.io/_uploads/S1BctduzJx.png">
+<img width="300" src="https://github.com/user-attachments/assets/397dfdf3-82e0-4d83-9b82-66611dad14a3">
 
 <br>
 <br>
@@ -174,8 +174,8 @@ class TweetCell : UICollectionViewCell {
 
 ## Enum을 활용해 재사용 가능한 코드를 작성합니다.
 
-<img width="200" src="https://hackmd.io/_uploads/SyaW5_OGyl.png">
-<img width="200" src="https://hackmd.io/_uploads/SJpbc_Oz1l.png">
+<img width="200" src="https://github.com/user-attachments/assets/0cca1e62-055c-4fc7-926a-01b0a95c5a33">
+<img width="200" src="https://github.com/user-attachments/assets/09481c66-ed93-48ab-a6ea-39d41ed02fc5">
 
 위 그림과 같이 트윗을 작성하는 뷰와 다른 사람의 트윗에 대해 댓글을 작성한 뷰는 매우 유사합니다. 뷰를 따로 만들지 않고, 하나의 뷰에 매개변수로 `tweet`과 `reply` 케이스를 가지는 Enum을 전달하여 재사용 가능한 뷰를 구현하였습니다. 
 
