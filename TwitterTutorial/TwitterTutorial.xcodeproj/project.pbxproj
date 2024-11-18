@@ -131,6 +131,130 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		785AEDB62CEB23DF0084B413 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				785AEDB72CEB240D0084B413 /* AuthenticationScene */,
+				785AEDB82CEB24240084B413 /* MainTabBarScene */,
+				785AEDC02CEB245F0084B413 /* FeedScene */,
+				785AEDBF2CEB245D0084B413 /* UploadTweetScene */,
+				785AEDBE2CEB245B0084B413 /* ProfileScene */,
+				785AEDC32CEB26B50084B413 /* EditProfileScene */,
+				785AEDBD2CEB24590084B413 /* TweetScene */,
+				785AEDBC2CEB24550084B413 /* SearchScene */,
+				785AEDB92CEB24460084B413 /* NotificationScene */,
+				785AEDC12CEB24D90084B413 /* ConversationScene */,
+				785AEDC22CEB24E40084B413 /* Common */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		785AEDB72CEB240D0084B413 /* AuthenticationScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0162C32CB9200C33A6D /* LoginController.swift */,
+				785FA0182C32CCB600C33A6D /* RegistrationController.swift */,
+			);
+			path = AuthenticationScene;
+			sourceTree = "<group>";
+		};
+		785AEDB82CEB24240084B413 /* MainTabBarScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0092C32A97D00C33A6D /* MainTabController.swift */,
+			);
+			path = MainTabBarScene;
+			sourceTree = "<group>";
+		};
+		785AEDB92CEB24460084B413 /* NotificationScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0A22C3D180000C33A6D /* NotificationCell.swift */,
+				785FA00F2C32AC1C00C33A6D /* NotificationsController.swift */,
+				785FA0A42C3D204400C33A6D /* NotificationViewModel.swift */,
+			);
+			path = NotificationScene;
+			sourceTree = "<group>";
+		};
+		785AEDBC2CEB24550084B413 /* SearchScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA00D2C32AC0300C33A6D /* SearchController.swift */,
+				785FA0702C36D2A800C33A6D /* UserCell.swift */,
+			);
+			path = SearchScene;
+			sourceTree = "<group>";
+		};
+		785AEDBD2CEB24590084B413 /* TweetScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0742C383F5D00C33A6D /* TweetHeader.swift */,
+				785FA07A2C396F7700C33A6D /* ActionSheetCell.swift */,
+				785FA0722C383D2800C33A6D /* TweetController.swift */,
+				785FA04A2C358AA800C33A6D /* TweetViewModel.swift */,
+				785FA07C2C398D4300C33A6D /* ActionSheetViewModel.swift */,
+			);
+			path = TweetScene;
+			sourceTree = "<group>";
+		};
+		785AEDBE2CEB245B0084B413 /* ProfileScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA06A2C36906700C33A6D /* ProfileFilterView.swift */,
+				785FA06C2C36929200C33A6D /* ProfileFilterCell.swift */,
+				785FA0682C36498200C33A6D /* ProfileHeader.swift */,
+				785FA04C2C359A6F00C33A6D /* ProfileController.swift */,
+				785FA06E2C36A0F700C33A6D /* ProfileHeaderViewModel.swift */,
+			);
+			path = ProfileScene;
+			sourceTree = "<group>";
+		};
+		785AEDBF2CEB245D0084B413 /* UploadTweetScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0762C39265800C33A6D /* UploadTweetViewModel.swift */,
+				785FA0402C35218000C33A6D /* UploadTweetController.swift */,
+			);
+			path = UploadTweetScene;
+			sourceTree = "<group>";
+		};
+		785AEDC02CEB245F0084B413 /* FeedScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA00B2C32ABAC00C33A6D /* FeedController.swift */,
+			);
+			path = FeedScene;
+			sourceTree = "<group>";
+		};
+		785AEDC12CEB24D90084B413 /* ConversationScene */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0112C32AC3E00C33A6D /* ConversationsController.swift */,
+			);
+			path = ConversationScene;
+			sourceTree = "<group>";
+		};
+		785AEDC22CEB24E40084B413 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				785FA0482C35491500C33A6D /* TweetCell.swift */,
+				785FA0422C35298100C33A6D /* InputTextView.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		785AEDC32CEB26B50084B413 /* EditProfileScene */ = {
+			isa = PBXGroup;
+			children = (
+				78602C492C44B142004B9BD4 /* EditProfileHeader.swift */,
+				78602C4D2C44B62E004B9BD4 /* EditProfileCell.swift */,
+				78602C522C460126004B9BD4 /* EditProfileFooter.swift */,
+				78602C472C44A842004B9BD4 /* EditProfileController.swift */,
+				78602C4B2C44B58C004B9BD4 /* EditProfileViewModel.swift */,
+			);
+			path = EditProfileScene;
+			sourceTree = "<group>";
+		};
 		785F9FE32C32A4C100C33A6D = {
 			isa = PBXGroup;
 			children = (
@@ -151,11 +275,9 @@
 			isa = PBXGroup;
 			children = (
 				78602C572C48DF9E004B9BD4 /* App */,
-				785FA0082C32A89B00C33A6D /* Model */,
-				785FA0072C32A88D00C33A6D /* View */,
-				785FA0062C32A88A00C33A6D /* ViewModel */,
-				785FA0052C32A88800C33A6D /* Controller */,
 				785FA0042C32A88500C33A6D /* API */,
+				785FA0082C32A89B00C33A6D /* Model */,
+				785AEDB62CEB23DF0084B413 /* Presentation */,
 				785FA0032C32A87900C33A6D /* Utils */,
 				785F9FF82C32A4C500C33A6D /* Assets.xcassets */,
 				785F9FFA2C32A4C500C33A6D /* LaunchScreen.storyboard */,
@@ -187,55 +309,6 @@
 			path = API;
 			sourceTree = "<group>";
 		};
-		785FA0052C32A88800C33A6D /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-				785FA0152C32CB6500C33A6D /* Authentication */,
-				785FA0092C32A97D00C33A6D /* MainTabController.swift */,
-				785FA00B2C32ABAC00C33A6D /* FeedController.swift */,
-				785FA00D2C32AC0300C33A6D /* SearchController.swift */,
-				785FA00F2C32AC1C00C33A6D /* NotificationsController.swift */,
-				785FA0112C32AC3E00C33A6D /* ConversationsController.swift */,
-				785FA0402C35218000C33A6D /* UploadTweetController.swift */,
-				785FA04C2C359A6F00C33A6D /* ProfileController.swift */,
-				785FA0722C383D2800C33A6D /* TweetController.swift */,
-				78602C472C44A842004B9BD4 /* EditProfileController.swift */,
-			);
-			path = Controller;
-			sourceTree = "<group>";
-		};
-		785FA0062C32A88A00C33A6D /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				785FA04A2C358AA800C33A6D /* TweetViewModel.swift */,
-				785FA06E2C36A0F700C33A6D /* ProfileHeaderViewModel.swift */,
-				785FA0762C39265800C33A6D /* UploadTweetViewModel.swift */,
-				785FA07C2C398D4300C33A6D /* ActionSheetViewModel.swift */,
-				785FA0A42C3D204400C33A6D /* NotificationViewModel.swift */,
-				78602C4B2C44B58C004B9BD4 /* EditProfileViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		785FA0072C32A88D00C33A6D /* View */ = {
-			isa = PBXGroup;
-			children = (
-				785FA0422C35298100C33A6D /* InputTextView.swift */,
-				785FA0482C35491500C33A6D /* TweetCell.swift */,
-				785FA0682C36498200C33A6D /* ProfileHeader.swift */,
-				785FA06A2C36906700C33A6D /* ProfileFilterView.swift */,
-				785FA06C2C36929200C33A6D /* ProfileFilterCell.swift */,
-				785FA0702C36D2A800C33A6D /* UserCell.swift */,
-				785FA0742C383F5D00C33A6D /* TweetHeader.swift */,
-				785FA07A2C396F7700C33A6D /* ActionSheetCell.swift */,
-				785FA0A22C3D180000C33A6D /* NotificationCell.swift */,
-				78602C492C44B142004B9BD4 /* EditProfileHeader.swift */,
-				78602C4D2C44B62E004B9BD4 /* EditProfileCell.swift */,
-				78602C522C460126004B9BD4 /* EditProfileFooter.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		785FA0082C32A89B00C33A6D /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -244,15 +317,6 @@
 				785FA09E2C3D0CAD00C33A6D /* Notification.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		785FA0152C32CB6500C33A6D /* Authentication */ = {
-			isa = PBXGroup;
-			children = (
-				785FA0162C32CB9200C33A6D /* LoginController.swift */,
-				785FA0182C32CCB600C33A6D /* RegistrationController.swift */,
-			);
-			path = Authentication;
 			sourceTree = "<group>";
 		};
 		78602C572C48DF9E004B9BD4 /* App */ = {
